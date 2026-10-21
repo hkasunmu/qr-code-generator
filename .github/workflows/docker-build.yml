@@ -1,0 +1,25 @@
+
+name: QR Code Generator Docker Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t qr-code-generator-app .
+
+      - name: Test QR Code Generator
+        run: |
+          docker run --name qr-test qr-code-generator-app --url https://www.njit.edu
+          docker logs qr-test
+          docker cp qr-test:/app/qr_codes/qr_code.png ./qr_code_test.png
+          test -s qr_code_test.png
